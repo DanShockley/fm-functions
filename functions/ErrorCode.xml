@@ -3,7 +3,7 @@
 // version 1.3, Erik Shagdar
 
 /*
-	Returns the explanation for the error number. Also contains HTC custom codes
+	Returns the explanation for the error number. Also contains HTC custom codes. 
 
 
 HISTORY:
