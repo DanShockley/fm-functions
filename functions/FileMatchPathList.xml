@@ -1,0 +1,51 @@
+<fmxmlsnippet type="FMObjectList">
+    <CustomFunction id="206" functionArity="2" visible="True" parameters="someFile;options" name="FileMatchPathList">
+        <Calculation><![CDATA[// FileMatchPathList ( someFile ; options )
+// version 2023-07-20, Daniel A. Shockley
+
+/*
+       Returns the full FileMaker path(s) to a file in the user's Documents folder where the file name matches exactly. 
+       NOTE: it will return MULTIPLE values if there are more than one match (presumably in different folders). 
+
+       options: 
+        - [empty]: match exactly
+        - "partial" - find partial matches
+        - NO OTHER OPTIONS YET.
+
+
+HISTORY:
+       2023-07-20 ( danshockley ): first created. 
+*/
+
+While ( [ 
+       // initialVariable 
+         searchString = 
+               Case ( 
+                       PatternCount ( options ; "partial" )
+                       ; someFile
+                       ; 
+                       /* default is an EXACT match for the file name */
+                       "/" & someFile & Char ( 13 )
+                       )
+       ; docPathList = Get ( DocumentsPathListing ) & Char ( 13 )    /* add a trailing return just in case file is the list value in the list. */
+       ; countMatches = PatternCount ( docPathList ; searchString )
+       ; indexMatch = 0
+       ; matchPaths = ""
+
+] ; 
+       // condition 
+       indexMatch < countMatches
+
+; [ 
+       // logic 
+         indexMatch = indexMatch + 1
+       ; posThisMatch = Position ( docPathList ; searchString ; 1 ; indexMatch )
+       ; whichLineThisMatch = 1 + PatternCount ( Left ( docPathList ; posThisMatch ) ; Char ( 13 ) )
+       ; matchPaths = List ( matchPaths ; GetValue ( docPathList ; whichLineThisMatch ) )
+
+] ; 
+       // result 
+       matchPaths
+)]]></Calculation>
+    </CustomFunction>
+</fmxmlsnippet>
