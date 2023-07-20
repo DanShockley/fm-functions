@@ -1,0 +1,79 @@
+// SessionINFO ( options )
+// version 2023-07-19, Daniel A. Shockley
+
+/*
+	Return a list of useful info about the current user session (host, account, device, etc.). Useful for providing support to users. 
+
+	options: 
+	 - [empty]: provides a plain text list of the info. 
+	 - webviewer: provides info in a data URI that should work on both large and small screens. 
+
+
+HISTORY:
+	2023-07-19 ( danshockley ): first created. 
+*/
+
+Case ( 
+	options = "webviewer"
+	; List ( ""
+		; "data:text/html," & "<html>"
+		; "<head>"
+		; 
+"<style type=\"text/css\">
+body {
+  font-family: \"Arial\" ;
+  font-size: "
+& If ( Get ( ScreenWidth ) < 700 ; "4.0" ; "0.9" ) & "em ;"
+& "
+  padding: 0px;  
+  margin: 0px;
+  width: 100%;
+}
+</style>"
+		; "</head>"
+		; "<body>"
+		; "<h3>Server</h3>"
+		; "<dl>"
+		; "<dt>Host Name:</dt>" & "<dd>" & Get ( HostName ) & "</dd>"
+		; "<dt>Host IP Address:</dt>" & "<dd>" & Get ( HostIPAddress ) & "</dd>"
+		; "</dl>"
+		; "<h3>Your Account</h3>"
+		; "<dl>"
+		; "<dt>Account Name:</dt>" & "<dd>" & Get ( AccountName ) & "</dd>"
+		; "<dt>Privilege Set:</dt>" & "<dd>" & Get ( AccountPrivilegeSetName ) & "</dd>"
+		; "</dl>"
+		; "<h3>Your Device</h3>"
+		; "<dl>"
+		; "<dt>Machine Name:</dt>" & "<dd>" & Get ( UserName ) & "</dd>"
+		; "<dt>Screen Size (W x H):</dt>" & "<dd>" & Get ( ScreenWidth ) & "x" & Get ( ScreenHeight ) & "</dd>"
+		; "<dt>FM Version:</dt>" & "<dd>" & Get ( ApplicationVersion ) & "</dd>"
+		; "<dt>App Arch:</dt>" & "<dd>" & Get ( ApplicationArchitecture ) & "</dd>"
+		; "<dt>System Platform:</dt>" & "<dd>" & Get ( SystemPlatform ) & "</dd>"
+		; "<dt>System Version:</dt>" & "<dd>" & Get ( SystemVersion ) & "</dd>"
+		; "<dt>IP Address(es):</dt>" & "<dd>" & Substitute ( Get ( SystemIPAddress ) ; [ Char ( 13 ) ; ", " ] ) & "</dd>"
+		; "</dl>"
+		; "</body>"
+		; "</html>"
+		)
+
+	/* default is to just list the info, plain text: */
+	; List ( ""
+		; "Server:"
+		; "  Host Name: " & Get ( HostName )
+		; "  Host IP Address: " & Get ( HostIPAddress )
+
+		; "Your Account:"
+		; "  Account Name: " & Get ( AccountName )
+		; "  Privilege Set: " & Get ( AccountPrivilegeSetName )
+
+		; "Your Device:"
+		; "  Machine Name: " & Get ( UserName )
+		; "  Screen Size (W x H): " & Get ( ScreenWidth ) & "x" & Get ( ScreenHeight )
+		; "  App Version: " & Get ( ApplicationVersion )
+		; "  App Arch: " & Get ( ApplicationArchitecture )
+		; "  System Platform: " & Get ( SystemPlatform )
+		; "  System Version: " & Get ( SystemVersion )
+		; "  IP Address(es): " & Substitute ( Get ( SystemIPAddress ) ; [ Char ( 13 ) ; ", " ] ) 
+		)
+	
+	)
