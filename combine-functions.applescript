@@ -1,24 +1,49 @@
 -- combine-functions.applescript
+-- version 2024-03-15, Dan Shockley
 
--- Combines the XML files into a single FileMaker-object-as-XML block. 
+(*
+
+	Combines the separate XML custom function files into a single FileMaker-object-as-XML text block. 
+	Then, you can use something like FmClipTools or another utility to convert that text XML into actual pasteable FileMaker clipboard objects. 
+
+HISTORY:
+	2024-03-15 ( danshockley ): Updated to actually do what it says on the tin. 
+	2018-xx-xx ( danshockley ): First created. Date unknown. Didn't work? 
+*)
+
+
 
 property functionFolderName : "functions"
+
+property xmlHeader : "<fmxmlsnippet type=\"FMObjectList\">"
+property xmlFooter : "</fmxmlsnippet>"
 
 on run
 	
 	set functionFolderPath to fileParentFromPath({filePath:(path to me) as string, pathDelim:":"}) & functionFolderName & ":"
 	
+	
+	set lengthHeader to length of xmlHeader
+	set lengthFooter to length of xmlFooter
+	set newTextBlock to xmlHeader
 	tell application "Finder"
 		
-		repeat with oneFile in contents of (alias functionFolderPath)
-			
-			log oneFile
-			
+		repeat with oneFile in entire contents of (alias functionFolderPath)
+			set oneFile to contents of oneFile
+			set oneFile to (oneFile as alias)
+			set oneXML to read oneFile
+			set oneLength to length of oneXML
+			set oneXML to text (lengthHeader + 1) thru (oneLength - lengthFooter) of oneXML
+			set newTextBlock to newTextBlock & oneXML
 		end repeat
 		
 	end tell
 	
+	set newTextBlock to newTextBlock & xmlFooter
 	
+	set the clipboard to newTextBlock
+	
+	return newTextBlock
 	
 end run
 
